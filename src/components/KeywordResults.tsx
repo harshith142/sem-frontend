@@ -48,7 +48,7 @@ export function KeywordResults({
   const [selectedCompetition, setSelectedCompetition] =
     useState<string>("all");
 
-  // Get all keywords from search ad groups with proper typing
+  // Get all keywords from search ad groups
   const allKeywords: any[] = Object.values(searchAdGroups || {}).flat();
 
   // Debug log: check one keyword object
@@ -59,7 +59,11 @@ export function KeywordResults({
   }, [allKeywords]);
 
   const filteredKeywords = allKeywords.filter((keyword: any) => {
-    const volume = keyword.search_volume || 0;
+    const volume =
+      keyword.search_volume ||
+      keyword.avg_monthly_searches ||
+      keyword.monthly_searches ||
+      0;
     const volumeFilter = volume >= minVolume;
     const competitionFilter =
       selectedCompetition === "all" ||
@@ -83,7 +87,12 @@ export function KeywordResults({
   const displayTotalVolume =
     totalVolume ||
     filteredKeywords.reduce(
-      (sum: number, kw: any) => sum + (kw.search_volume || 0),
+      (sum: number, kw: any) =>
+        sum +
+        (kw.search_volume ||
+          kw.avg_monthly_searches ||
+          kw.monthly_searches ||
+          0),
       0
     );
   const displayAvgCPC = avgCpc || 1.5;
@@ -266,7 +275,7 @@ export function KeywordResults({
                     key={index}
                     className="hover:bg-table-row-hover transition-smooth"
                   >
-                    {/* ✅ FIX: show proper keyword text */}
+                    {/* ✅ FIX: Show proper keyword text */}
                     <TableCell className="font-medium text-foreground">
                       {keyword.keyword_text ||
                         keyword.name ||
@@ -277,7 +286,12 @@ export function KeywordResults({
                     <TableCell className="text-right">
                       <div className="flex items-center justify-end gap-1">
                         <TrendingUp className="w-3 h-3 text-success" />
-                        {(keyword.search_volume || 0).toLocaleString()}
+                        {(
+                          keyword.search_volume ||
+                          keyword.avg_monthly_searches ||
+                          keyword.monthly_searches ||
+                          0
+                        ).toLocaleString()}
                       </div>
                     </TableCell>
                     <TableCell>
